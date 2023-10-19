@@ -40,28 +40,16 @@ MxCube.Version=6.7.0
 MxDb.Version=DB.6.0.70
 NVIC.BusFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.DebugMonitor_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
-<<<<<<< HEAD
 NVIC.EXTI2_IRQn=true\:1\:1\:true\:false\:true\:true\:true\:true
 NVIC.ForceEnableDMAVector=false
-=======
-NVIC.EXTI2_IRQn=true\:0\:0\:false\:false\:true\:true\:true\:true
-NVIC.ForceEnableDMAVector=true
->>>>>>> d23068b14684d30f2c5b948dcf68aa8ca890540c
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.MemoryManagement_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.PendSV_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
-<<<<<<< HEAD
 NVIC.PriorityGroup=NVIC_PRIORITYGROUP_2
 NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.SysTick_IRQn=true\:0\:0\:true\:false\:true\:false\:true\:false
 NVIC.UART5_IRQn=true\:1\:0\:true\:false\:true\:true\:true\:true
-=======
-NVIC.PriorityGroup=NVIC_PRIORITYGROUP_4
-NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
-NVIC.SysTick_IRQn=true\:15\:0\:false\:false\:true\:false\:true\:false
-NVIC.UART5_IRQn=true\:0\:0\:false\:false\:true\:true\:true\:true
->>>>>>> d23068b14684d30f2c5b948dcf68aa8ca890540c
 NVIC.UsageFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 PA13.Mode=Serial_Wire
 PA13.Signal=SYS_JTMS-SWDIO
@@ -135,11 +123,7 @@ ProjectManager.StackSize=0x400
 ProjectManager.TargetToolchain=STM32CubeIDE
 ProjectManager.ToolChainLocation=
 ProjectManager.UnderRoot=true
-<<<<<<< HEAD
 ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_UART5_Init-UART5-false-HAL-true,4-MX_SPI1_Init-SPI1-false-HAL-true,5-MX_TIM6_Init-TIM6-false-HAL-true,0-MX_CORTEX_M7_Init-CORTEX_M7-false-HAL-true
-=======
-ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_SPI1_Init-SPI1-false-HAL-true,4-MX_UART5_Init-UART5-false-HAL-true,0-MX_CORTEX_M7_Init-CORTEX_M7-false-HAL-true
->>>>>>> d23068b14684d30f2c5b948dcf68aa8ca890540c
 RCC.AHBFreq_Value=72000000
 RCC.APB1CLKDivider=RCC_HCLK_DIV2
 RCC.APB1Freq_Value=36000000

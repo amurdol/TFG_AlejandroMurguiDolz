@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    Main_App.c
-  * @brief   This is a code contains all the necesary functions for the main program
+  * @brief   This is a code contains all the necessary functions for the main program
   * @author  Alejandro Murgui Dolz
   * @version V1.0
   * @date    09-October-2023
@@ -24,6 +24,12 @@ char SerialCmd;
 _Bool interruptEnabled = 1;
 _Bool transmissionReceived = 0;
 
+volatile uint32_t Time0 = 0;
+volatile uint32_t Time1 = 0;
+volatile uint32_t Time2 = 0;
+volatile uint32_t timeElapsed1 = 0;
+volatile uint32_t timeElapsed2 = 0;
+
 /**
  * @brief   Handle external interrupt DIO0.
  *
@@ -39,6 +45,16 @@ void onInterrupt(){
 		return;
 	}
 	transmissionReceived = 1;
+	Time2 = HAL_GetTick();
+	timeElapsed2 = Time2 - Time1;
+	/*char timeElapsedStr[20];
+	snprintf(timeElapsedStr, sizeof(timeElapsedStr), "%lu", timeElapsed1);
+	HAL_UART_Transmit(&huart5, (uint8_t*)"Time1: ", strlen("Time1: "), 100);
+	HAL_UART_Transmit(&huart5, (uint8_t*)timeElapsedStr, strlen(timeElapsedStr), 100);
+	snprintf(timeElapsedStr, sizeof(timeElapsedStr), "%lu", timeElapsed2);
+	HAL_UART_Transmit(&huart5, (uint8_t*)" Time2: ", strlen(" Time2: "), 100);
+	HAL_UART_Transmit(&huart5, (uint8_t*)timeElapsedStr, strlen(timeElapsedStr), 100);*/
+
 }
 
 /**
@@ -79,7 +95,7 @@ void sendFrame(uint8_t functionId, uint8_t optDataLen, uint8_t* optData) {
  *
  * @param   functionId  The function ID to be included in the LoRa frame.
  *
- * @return  None
+ * @return  transmissionSucces 1: success 0: failed
  */
 
 void sendFrame_Default(uint8_t functionId){
@@ -224,14 +240,13 @@ void decode(uint8_t* respFrame, uint8_t respLen) {
  *
  * @param   None
  *
- * @return  None
+ * @return  transmissionSucces 1: success 0: failed
  */
 void sendPing() {
 	HAL_UART_Transmit(&huart5, (uint8_t*)"Sending ping frame ... ", strlen("Sending ping frame ... "), 100);
 
 	// send the frame
 	sendFrame_Default(CMD_PING);
-
 }
 
 /**
@@ -243,7 +258,7 @@ void sendPing() {
  *
  * @param   None
  *
- * @return  None
+ * @return  transmissionSucces 1: success 0: failed
  */
 void requestPacketInfo() {
 	HAL_UART_Transmit(&huart5, (uint8_t*)"Requesting last packet info ... ", strlen("Requesting last packet info ... "), 100);
@@ -352,12 +367,14 @@ void LoraApp_loopSerial(){
 		break;
 	}
 	LoRa_startReceiving(&myLoRa);
-	interruptEnabled = 1;
+	Time0 = HAL_GetTick();
 	// Incrementar el índice y evitar desbordamiento
 	uartRxIndex = (uartRxIndex + 1) % UART_RX_BUFFER_SIZE;
 
 	// Reiniciar la recepción para esperar el próximo carácter
 	HAL_UART_Receive_IT(&huart5, (uint8_t *)&uartRxBuffer[uartRxIndex], 1);
+
+	interruptEnabled = 1;
 
 }
 
@@ -374,42 +391,44 @@ void LoraApp_loopSerial(){
  * @return  None
  */
 void LoraApp_loopReceive(){
-	// read received data
-	uint8_t* respFrame = (uint8_t*)malloc(20 * sizeof(uint8_t));
-	size_t respLen = LoRa_receive(&myLoRa, respFrame, 11);
+		// check if new data were received
+		if (transmissionReceived) {
+			// disable reception interrupt
+			interruptEnabled = 0;
+			transmissionReceived = 0;
 
-	// check if new data were received
-	if (transmissionReceived) {
-		// disable reception interrupt
-		interruptEnabled = 0;
-		transmissionReceived = 0;
+			// read received data
+			uint8_t* respFrame = (uint8_t*)malloc(20 * sizeof(uint8_t));
+			size_t respLen = LoRa_receive(&myLoRa, respFrame, 11);
+			Time1 = HAL_GetTick();
+			timeElapsed1 = Time1 - Time0;
 
 
+			// check reception success
+			decode(respFrame, respLen);
 
-		// check reception success
-		decode(respFrame, respLen);
+			/*if (state == ERR_NONE) {
+			      decode(respFrame, respLen);
 
-		/*if (state == ERR_NONE) {
-	      decode(respFrame, respLen);
+			    } else if (state == ERR_CRC_MISMATCH) {//ERR_CRC_MISMATCH
+			      Serial.println(F("Got CRC error!"));
+			      Serial.print(F("Received "));
+			      Serial.print(respLen);
+			      Serial.println(F(" bytes:"));
+			      //PRINT_BUFF(respFrame, respLen);
 
-	    } else if (state == ERR_CRC_MISMATCH) {//ERR_CRC_MISMATCH
-	      Serial.println(F("Got CRC error!"));
-	      Serial.print(F("Received "));
-	      Serial.print(respLen);
-	      Serial.println(F(" bytes:"));
-	      //PRINT_BUFF(respFrame, respLen);
+			    } else {
+			      Serial.println(F("Reception failed, code "));
+			      Serial.println(state);
 
-	    } else {
-	      Serial.println(F("Reception failed, code "));
-	      Serial.println(state);
+			    }*/
+			free(respFrame);
+			// enable reception interrupt
+			LoRa_startReceiving(&myLoRa);
+			interruptEnabled = 1;
+		}
 
-	    }*/
 
-		// enable reception interrupt
-		LoRa_startReceiving(&myLoRa);
-		interruptEnabled = 1;
-	}
-	free(respFrame);
 }
 
 
